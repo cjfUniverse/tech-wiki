@@ -1,0 +1,2317 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>科技图鉴 — Tech Wiki + 实时新闻</title>
+<style>
+  /* ── 主题变量 ── */
+  :root {
+    --transition-theme: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease, background 0.35s ease;
+  }
+  [data-theme="dark"] {
+    --bg-primary: #0a0a14;
+    --bg-secondary: #12121f;
+    --bg-card: rgba(22, 22, 38, 0.85);
+    --bg-glass: rgba(255, 255, 255, 0.04);
+    --text-primary: #f0f0f5;
+    --text-secondary: #8888a0;
+    --text-muted: #5a5a72;
+    --accent-cyan: #00d4ff;
+    --accent-purple: #8b5cf6;
+    --accent-green: #34d399;
+    --accent-pink: #f472b6;
+    --accent-orange: #fb923c;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-glow: rgba(0, 212, 255, 0.2);
+    --shadow-cyan: 0 0 30px rgba(0, 212, 255, 0.08);
+    --tag-bg: rgba(255,255,255,0.05);
+    --tag-border: rgba(255,255,255,0.08);
+    --tag-color: var(--text-muted);
+    --card-hover-bg: rgba(255,255,255,0.02);
+    --card-hover-border: rgba(0, 212, 255, 0.2);
+    --news-bg: rgba(22, 22, 38, 0.85);
+    --news-border: rgba(255, 255, 255, 0.08);
+    --news-hover-bg: rgba(255,255,255,0.03);
+    --news-empty-bg: rgba(255,255,255,0.03);
+    --news-empty-border: rgba(255,255,255,0.08);
+    --chip-bg: rgba(255,255,255,0.04);
+    --chip-hover-bg: rgba(0, 212, 255, 0.08);
+    --chip-active-bg: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(139,92,246,0.15));
+    --header-bg: rgba(255, 255, 255, 0.03);
+    --summary-border: rgba(0, 212, 255, 0.4);
+    --fact-bg: rgba(255,255,255,0.03);
+    --fact-myth-bg: rgba(244, 114, 182, 0.06);
+    --fact-myth-color: #f0a0b0;
+    --related-tag-bg: rgba(0, 212, 255, 0.12);
+    --related-tag-border: rgba(0, 212, 255, 0.3);
+    --related-tag-color: var(--accent-cyan);
+    --related-tag-hover-bg: rgba(0, 212, 255, 0.25);
+    --theme-toggle-bg: rgba(255,255,255,0.04);
+    --theme-toggle-hover-bg: rgba(255,255,255,0.08);
+  }
+  [data-theme="light"] {
+    --bg-primary: #f5f5f7;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --bg-glass: rgba(0, 0, 0, 0.02);
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-muted: #8e8e93;
+    --accent-cyan: #0071e3;
+    --accent-purple: #7c3aed;
+    --accent-green: #34c759;
+    --accent-pink: #ff2d55;
+    --accent-orange: #ff9500;
+    --border-subtle: rgba(0, 0, 0, 0.08);
+    --border-glow: rgba(0, 113, 227, 0.2);
+    --shadow-cyan: 0 0 20px rgba(0, 113, 227, 0.1);
+    --tag-bg: #f2f2f7;
+    --tag-border: rgba(0, 0, 0, 0.08);
+    --tag-color: var(--text-secondary);
+    --card-hover-bg: rgba(0, 0, 0, 0.02);
+    --card-hover-border: rgba(0, 113, 227, 0.2);
+    --news-bg: #fff8e1;
+    --news-border: rgba(255, 224, 178, 0.5);
+    --news-hover-bg: #fff3df;
+    --news-empty-bg: #f2f2f7;
+    --news-empty-border: rgba(0, 0, 0, 0.12);
+    --chip-bg: #f2f2f7;
+    --chip-hover-bg: rgba(0, 113, 227, 0.08);
+    --chip-active-bg: rgba(0, 113, 227, 0.12);
+    --header-bg: rgba(255, 255, 255, 0.85);
+    --summary-border: rgba(0, 113, 227, 0.5);
+    --fact-bg: rgba(0, 0, 0, 0.03);
+    --fact-myth-bg: rgba(255, 45, 85, 0.05);
+    --fact-myth-color: #c03a4a;
+    --related-tag-bg: rgba(0, 113, 227, 0.1);
+    --related-tag-border: rgba(0, 113, 227, 0.25);
+    --related-tag-color: var(--accent-cyan);
+    --related-tag-hover-bg: rgba(0, 113, 227, 0.2);
+    --theme-toggle-bg: rgba(0, 0, 0, 0.05);
+    --theme-toggle-hover-bg: rgba(0, 0, 0, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: var(--transition-theme);
+    position: relative;
+  }
+
+  /* 背景纹理 */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(0, 212, 255, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(52, 211, 153, 0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.35s ease;
+  }
+  [data-theme="light"] body::before {
+    opacity: 0.3;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+    transition: opacity 0.35s ease;
+  }
+  [data-theme="light"] body::after {
+    opacity: 0.5;
+    background-image:
+      linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* ── Header ── */
+  header.app-header {
+    background: var(--header-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: var(--transition-theme);
+  }
+  .header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    transition: var(--transition-theme);
+  }
+  .brand .logo {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+    transition: box-shadow 0.35s ease;
+  }
+  [data-theme="light"] .brand .logo {
+    box-shadow: 0 0 15px rgba(0, 113, 227, 0.3);
+  }
+  .brand .badge {
+    font-size: 0.6rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid var(--accent-cyan);
+    color: var(--accent-cyan);
+    border-radius: 100px;
+    margin-left: 0.4rem;
+    transition: var(--transition-theme);
+  }
+  .brand .brand-sub {
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: 0.75rem;
+    margin-left: 0.3rem;
+    transition: var(--transition-theme);
+  }
+
+  /* ── 右侧操作区 ── */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .theme-toggle {
+    background: var(--theme-toggle-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 0.35rem 0.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: var(--transition-theme), border-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.72rem;
+    font-family: inherit;
+  }
+  .theme-toggle:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    background: var(--theme-toggle-hover-bg);
+  }
+  .theme-toggle .toggle-icon {
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+
+  /* ── 筛选栏 ── */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .filter-chip {
+    background: var(--chip-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 100px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: var(--text-secondary);
+    user-select: none;
+    white-space: nowrap;
+    font-family: inherit;
+  }
+  .filter-chip:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    background: var(--chip-hover-bg);
+  }
+  .filter-chip.active {
+    background: var(--chip-active-bg);
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.1);
+  }
+  .filter-chip .count {
+    background: rgba(255,255,255,0.08);
+    border-radius: 100px;
+    padding: 0 0.4rem;
+    margin-left: 0.35rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: var(--transition-theme);
+  }
+  .filter-chip.active .count { background: rgba(0,212,255,0.2); color: var(--accent-cyan); }
+  [data-theme="light"] .filter-chip .count { background: rgba(0,0,0,0.06); color: var(--text-muted); }
+  [data-theme="light"] .filter-chip.active .count { background: rgba(0,113,227,0.15); color: var(--accent-cyan); }
+
+  /* ── 新闻流 ── */
+  .news-section {
+    margin-top: 1.5rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: var(--transition-theme);
+  }
+  .news-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.9rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .news-header h2 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--accent-cyan);
+    transition: var(--transition-theme);
+  }
+  .news-header h2 .live-dot {
+    width: 7px; height: 7px;
+    background: var(--accent-green);
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 8px var(--accent-green);
+    transition: box-shadow 0.35s ease;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+  }
+  .news-header .refresh-btn {
+    background: var(--theme-toggle-bg);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.7rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: var(--transition-theme), border-color 0.2s, color 0.2s;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .news-header .refresh-btn:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+  }
+  .news-header .refresh-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .news_list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+  .news_item {
+    background: var(--news-bg);
+    border: 1px solid var(--news-border);
+    border-radius: 14px;
+    padding: 0.7rem 0.9rem;
+    display: flex;
+    gap: 0.85rem;
+    align-items: flex-start;
+    transition: all 0.25s ease;
+    cursor: default;
+    backdrop-filter: blur(10px);
+  }
+  .news_item:hover {
+    border-color: var(--border-glow);
+    box-shadow: var(--shadow-cyan);
+    transform: translateY(-1px);
+    background: var(--news-hover-bg);
+  }
+  .news_item .news_image {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    background: var(--bg-glass);
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border: 1px solid var(--border-subtle);
+    transition: all 0.3s;
+  }
+  .news_item .news_image.loaded {
+    border-color: transparent;
+  }
+  .news_item .news_image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .news_item .news_image .placeholder {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    opacity: 0.5;
+  }
+  .news_item .news_body {
+    flex: 1;
+    min-width: 0;
+  }
+  .news_item .news_title-zh {
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    margin-bottom: 0.15rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: var(--transition-theme);
+  }
+  .news_item .news_title-en {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 0.25rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: var(--transition-theme);
+  }
+  .news_item .news_summary {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.3rem;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: var(--transition-theme);
+  }
+  .news_item .news_meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    transition: var(--transition-theme);
+  }
+  .news_item .news_source {
+    font-weight: 500;
+    color: var(--accent-purple);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transition: var(--transition-theme);
+  }
+  .news_item .news_time {
+    color: var(--text-muted);
+  }
+  .news_item .news_tag {
+    display: inline-block;
+    background: rgba(139, 92, 246, 0.15);
+    border: 1px solid rgba(139, 92, 246, 0.25);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+    font-size: 0.62rem;
+    color: var(--accent-purple);
+    font-weight: 500;
+    margin-top: 0.25rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .news_item .news_tag:hover {
+    background: rgba(139, 92, 246, 0.3);
+    border-color: var(--accent-purple);
+  }
+  [data-theme="light"] .news_item .news_tag {
+    background: rgba(124, 58, 237, 0.12);
+    border-color: rgba(124, 58, 237, 0.3);
+  }
+  [data-theme="light"] .news_item .news_tag:hover {
+    background: rgba(124, 58, 237, 0.25);
+  }
+  .news_item .news_tag.related {
+    background: var(--related-tag-bg);
+    border-color: var(--related-tag-border);
+    color: var(--related-tag-color);
+  }
+  .news_item .news_tag.related:hover {
+    background: var(--related-tag-hover-bg);
+    border-color: var(--accent-cyan);
+  }
+
+  .news_empty {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    background: var(--news-empty-bg);
+    border: 1px dashed var(--news-empty-border);
+    border-radius: 14px;
+    transition: var(--transition-theme);
+  }
+
+  /* ── 主内容 ── */
+  main {
+    margin-top: 0.5rem;
+    padding-bottom: 4rem;
+  }
+
+  .category-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin: 1.5rem 0 0.7rem 0;
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--border-subtle);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: var(--transition-theme);
+  }
+  .category-label .cat-icon {
+    font-size: 0.8rem;
+  }
+
+  .card-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+  .card:hover {
+    border-color: var(--card-hover-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    background: var(--card-hover-bg);
+  }
+  [data-theme="light"] .card:hover {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  }
+  .card.open {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 0 1px rgba(0, 212, 255, 0.2), var(--shadow-cyan);
+  }
+
+  .card-head {
+    padding: 0.75rem 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .card-head:hover { background: var(--card-hover-bg); }
+
+  .card-head .avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: #fff;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,0.1);
+    transition: all 0.3s;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  [data-theme="light"] .card-head .avatar {
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+  .card-head .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .card-head .avatar.loaded {
+    border-color: rgba(0, 212, 255, 0.3);
+    box-shadow: 0 0 12px rgba(0, 212, 255, 0.15);
+  }
+  [data-theme="light"] .card-head .avatar.loaded {
+    border-color: rgba(0, 113, 227, 0.4);
+    box-shadow: 0 0 10px rgba(0, 113, 227, 0.2);
+  }
+  .card-head .avatar .avatar-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 0;
+  }
+  .card-head .avatar .avatar-text {
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    transition: var(--transition-theme);
+  }
+  [data-theme="light"] .card-head .avatar .avatar-text {
+    text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+    color: #1d1d1f;
+  }
+  .card-head .avatar.loaded .avatar-text { display: none; }
+  .card-head .avatar.loaded .avatar-bg { opacity: 0.15; }
+
+  .card-head .title-col { flex: 1; min-width: 0; }
+  .card-head .title {
+    font-weight: 600;
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text-primary);
+    transition: var(--transition-theme);
+  }
+  .card-head .sub {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    margin-top: 0.06rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: var(--transition-theme);
+  }
+  .card-head .chevron {
+    color: var(--text-muted);
+    font-size: 0.6rem;
+    transition: transform 0.25s, color 0.25s;
+    flex-shrink: 0;
+    margin-left: 0.3rem;
+  }
+  .card.open .chevron { transform: rotate(180deg); color: var(--accent-cyan); }
+
+  .body-wrap {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s ease;
+  }
+  .card.open .body-wrap {
+    max-height: 2000px;
+    padding: 0 0.9rem 1rem;
+  }
+  .body-wrap .summary {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.6rem;
+    line-height: 1.6;
+    padding-left: 0.75rem;
+    border-left: 2px solid var(--summary-border);
+    transition: var(--transition-theme);
+  }
+  .body-wrap .meta {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+    transition: var(--transition-theme);
+  }
+  .body-wrap .meta .dot {
+    display: inline-block;
+    width: 3px; height: 3px;
+    background: var(--text-muted);
+    border-radius: 50%;
+  }
+  .body-wrap .label {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--accent-cyan);
+    font-weight: 600;
+    margin-top: 0.6rem;
+    margin-bottom: 0.15rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    transition: var(--transition-theme);
+  }
+  .body-wrap .label::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent-cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--accent-cyan);
+    transition: box-shadow 0.35s ease;
+  }
+  .body-wrap .label.first { margin-top: 0; }
+  .body-wrap .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    margin-bottom: 0.4rem;
+  }
+  .body-wrap .tag-list .tag {
+    background: var(--tag-bg);
+    border: 1px solid var(--tag-border);
+    border-radius: 4px;
+    padding: 0.12rem 0.45rem;
+    font-size: 0.65rem;
+    color: var(--tag-color);
+    transition: all 0.15s;
+  }
+  .body-wrap .tag-list .tag:hover {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    background: rgba(0,212,255,0.08);
+  }
+  .body-wrap .fact {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.32rem;
+    padding: 0.25rem 0.6rem;
+    background: var(--fact-bg);
+    border-left: 2px solid rgba(0, 212, 255, 0.3);
+    border-radius: 0 6px 6px 0;
+    line-height: 1.5;
+    transition: var(--transition-theme);
+  }
+  .body-wrap .fact.myth {
+    background: var(--fact-myth-bg);
+    border-left-color: rgba(244, 114, 182, 0.4);
+    color: var(--fact-myth-color);
+  }
+  .body-wrap .news_link {
+    margin-top: 0.55rem;
+    font-size: 0.68rem;
+    color: var(--accent-cyan);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+  .body-wrap .news_link:hover {
+    background: rgba(0,212,255,0.1);
+    border-color: rgba(0,212,255,0.2);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    background: var(--news-empty-bg);
+    border: 1px dashed var(--news-empty-border);
+    border-radius: 14px;
+    transition: var(--transition-theme);
+  }
+
+  footer.app-footer {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--border-subtle);
+    font-size: 0.62rem;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.7;
+    transition: var(--transition-theme);
+  }
+
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid var(--border-subtle);
+    border-top-color: var(--accent-cyan);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    display: inline-block;
+    transition: border-color 0.35s ease;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 3px; transition: background 0.35s ease; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+  [data-theme="light"] ::-webkit-scrollbar-thumb { background: var(--text-muted); }
+  [data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="container">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="logo">◈</div>
+        <div>科技图鉴
+          <span class="badge">实时</span>
+          <span class="brand-sub">· 点击卡片展开 · 客观科普</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div class="filter-bar" id="filterBar"></div>
+        <button class="theme-toggle" id="themeToggle" title="切换主题">
+          <span class="toggle-icon" id="themeIcon">🌙</span>
+          <span id="themeLabel">夜晚</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <section class="news-section">
+    <div class="news-header">
+      <h2><span class="live-dot"></span> 实时科技新闻 · 中文翻译</h2>
+      <button class="refresh-btn" id="refreshNews">
+        <span class="spinner" id="newsSpinner" style="display:none"></span>
+        <span id="refreshLabel">↻ 刷新</span>
+      </button>
+    </div>
+    <div class="news_list" id="newsList">
+      <div class="news_empty">加载新闻中…</div>
+    </div>
+  </section>
+
+  <div id="content"></div>
+</main>
+
+<footer class="app-footer">
+  人物头像 · 软件 Logo: 维基百科 API / 维基共享資源 · 新闻图: 来源站点 OG 图 · 新闻源: Hacker News + Techmeme + TechCrunch<br>
+  新闻翻译: 机器翻译 (MyMemory) · 数据整理至 2026-09 · 每个条目力求客观事实 · 昼夜主题自动切换 · 实时新闻每 5 分钟自动刷新
+</footer>
+
+<script>
+// ─── 数据 ────────────────────────────────────────────────────────────────
+const DATA = [
+  // ═══════════════════════════════════════ 美国 创始人/大佬 ═══════════
+  {
+    id: 'jobs',
+    cat: 'founder',
+    color: '#8735fa',
+    name: '史蒂夫·乔布斯 (Steve Jobs)',
+    role: 'Apple 联合创始人 · NeXT · Pixar',
+    wikiLang: 'en',
+    wikiTitle: 'Steve Jobs',
+    summary: '1976 年与 Steve Wozniak 和 Ronald Wayne 共同创立 Apple。2001 年 iPod、2007 年 iPhone 的推出改变了个人计算和手机行业。他是極簡設計和封閉生態系统理念的代表人物。2011 年 10 月 5 日去世。',
+    facts: [
+      '1976 年与 Wozniak 和 Ronald Wayne 共同创立 Apple，第一款产品是 Apple I 电脑',
+      '1985 年被 Apple 董事会解雇，随后创立 NeXT（后被 Apple 收购）和 Pixar（后卖给 Disney）',
+      '1997 年 Apple 收购 NeXT 后回归，花费十年时间将 Apple 从濒临破产变为最有价值的公司之一',
+      'iPhone (2007) 和 App Store (2008) 是他在世期间推出的最具颠覆性的产品'
+    ],
+    myths: [
+      '他编程能力很强？— 实际上 Wozniak 是工程天才，Jobs 负责产品、体验和营销',
+      '他是天才发明家？— 更准确地说，他是产品整合和用户体验的推动者，Apple 的许多技术基础来自收购或团队'
+    ]
+  },
+  {
+    id: 'bezos',
+    cat: 'founder',
+    color: '#ff9900',
+    name: '杰夫·贝佐斯 (Jeff Bezos)',
+    role: 'Amazon 创始人 · Blue Origin',
+    wikiLang: 'en',
+    wikiTitle: 'Jeff Bezos',
+    summary: '1994 年创立 Amazon，最初仅销售图书。后扩展为「地球上最大的商店」，并推出 AWS 云服务。2021 年卸任 CEO，2024 年卸任董事长。',
+    facts: [
+      '1994 年创立 Amazon，1997 年上市',
+      'AWS 于 2006 年推出，成为全球云计算的主要基础设施之一',
+      'Prime 订阅服务于 2005 年推出，改变了电商物流和用户忠诚度模式',
+      'Amazon 还拥有 Kindle、Alexa/Echo 硬件和物流网络',
+      'Blue Origin 是他的火箭公司，专注于 New Shepard 亚轨道飞行和太空旅游'
+    ],
+    myths: [
+      '贝佐斯仅靠零售业务发家？— AWS 的云业务对公司利润的贡献极大',
+      '他的太空计划只是噱头？— Blue Origin 确实在进行真实的硬件开发和载人飞行测试'
+    ]
+  },
+  {
+    id: 'gates',
+    cat: 'founder',
+    color: '#00a4ef',
+    name: '比尔·盖茨 (Bill Gates)',
+    role: 'Microsoft 共同创始人 · 慈善家',
+    wikiLang: 'en',
+    wikiTitle: 'Bill Gates',
+    summary: '1975 年与保罗·艾伦共同创立 Microsoft。1980 年与 IBM 签订 DOS 许可证协议，这一决策使 Windows 在 PC 市场占据主导地位。后转向慈善事业，创立比尔及梅琳达·盖茨基金会。',
+    facts: [
+      '1975 年创立 Microsoft，最初开发 Altair 8800 的 BASIC 解释器',
+      '1980 年与 IBM 签订 DOS 合同（收购 QDOS 后包装为 MS-DOS），这一决策使 Windows 后来统治 PC 市场',
+      '1990 年代中期至 2000 年代初，他是世界上最富有的人之一',
+      '2000 年创立比尔及梅琳达·盖茨基金会，资助全球健康、发展和教育项目',
+      '2014 年卸任 CEO，随后逐渐从董事会退出，专注于慈善和写作'
+    ],
+    myths: [
+      '他抄袭了苹果的想法？— 早期历史较复杂（GUI 技术部分来自 Xerox PARC 等），但苹果并未直接指控 Microsoft 抄袭',
+      'Microsoft 仅靠 Windows 生存？— Office 办公套件也是重要的利润来源'
+    ]
+  },
+  {
+    id: 'zuckerberg',
+    cat: 'founder',
+    color: '#1877f2',
+    name: '马克·扎克伯格 (Mark Zuckerberg)',
+    role: 'Facebook / Meta 创始人兼 CEO',
+    wikiLang: 'en',
+    wikiTitle: 'Mark Zuckerberg',
+    summary: '2004 年在哈佛宿舍创立 Facebook，最初是面向大学生的社交网站。随后收购 Instagram (2012) 和 WhatsApp (2014)。2021 年将公司更名为 Meta，重心转向元宇宙和 VR。',
+    facts: [
+      '2004 年 2 月创立 Facebook（当时称为 TheFacebook，仅限哈佛学生），同年扩展至其他大学',
+      '2006 年向公众开放（13 岁以上且有邮箱即可注册）',
+      '2012 年 IPO，当时规模较大的科技上市之一（约 160 亿美元）',
+      '2012 年收购 Instagram（约 10 亿美元），2014 年收购 WhatsApp（约 190 亿美元）',
+      '2021 年宣布将 Facebook Inc. 更名为 Meta，重心放在元宇宙、VR/AR 上',
+      'Meta 开源了 Llama 系列大语言模型（Llama 2、Llama 3 等）'
+    ],
+    myths: [
+      'Meta 仅靠 Facebook App？— 广告业务和 WhatsApp、Instagram 都有大规模体量',
+      '元宇宙只是马克的个人设想？— 该方向有大量资源和团队在投入，但市场反应相对较慢'
+    ]
+  },
+  {
+    id: 'musk',
+    cat: 'founder',
+    color: '#111111',
+    name: '埃隆·马斯克 (Elon Musk)',
+    role: 'Tesla · SpaceX · X(Twitter) · Neuralink · The Boring Company',
+    wikiLang: 'en',
+    wikiTitle: 'Elon Musk',
+    summary: '1971 年出生于南非，后移居加拿大并赴美。他于 2004 年加入 Tesla 并在 2008 年起担任 CEO，2002 年创立 SpaceX 并任 CEO。2022 年以 440 亿美元收购 Twitter 并更名为 X。还涉及 Neuralink（脑机接口）和 The Boring Company（隧道建设）。',
+    facts: [
+      'Tesla：2004 年加入并提供创始资金，2008 年成为 CEO；公司险些破产后依靠 Model S 扭转局面',
+      'SpaceX 于 2002 年创立，主要成就包括火箭第一级回收复用（Falcon 9）',
+      'Starlink 是低地球轨道卫星互联网星座，覆盖全球（包括战区和偏远地区）',
+      '2022 年 10 月收购 Twitter（440 亿美元），2023 年中期更名为 X',
+      'X 收购后进行大规模裁员、认证系统付费化、审核政策调整等',
+      'Neuralink 从事脑机接口研究，The Boring Company 从事隧道基础设施建设'
+    ],
+    myths: [
+      '他一个人完成了所有发明？— 他是产品决策者和融资人，核心工程由团队完成',
+      '他的所有公司都在盈利？— SpaceX 增长较快，但上市和盈利状况不如 Tesla 透明'
+    ]
+  },
+  {
+    id: 'hastings',
+    cat: 'founder',
+    color: '#e50914',
+    name: '里德·哈斯廷斯 (Reed Hastings)',
+    role: 'Netflix 联合创始人 · 前 CEO',
+    wikiLang: 'en',
+    wikiTitle: 'Reed Hastings',
+    summary: '1997 年与 Marc Randolph 共同创立 Netflix，最初是 DVD 邮寄租赁服务，后转向在线流媒体。2007 年推出流媒体服务，2013 年开始制作原创剧集（如《纸牌屋》）。2020 年卸任 CEO。',
+    facts: [
+      '1997 年创立 Netflix，最初是按月邮寄 DVD 的订阅服务',
+      '2007 年推出在线流媒体业务',
+      '2013 年推出《纸牌屋》，这是 Netflix 的第一部原创剧集，开启了流媒体自制内容时代',
+      '2010 年代在全球扩张，成为流媒体市场的领头羊之一',
+      '2020 年卸任 CEO，由特德·萨兰多斯接任联席 CEO',
+      '2023 年因关于广告的争议性言论受到关注'
+    ],
+    myths: [
+      'Netflix 仅靠内容制作？— 订阅费用才是核心收入，内容是留住订阅者的手段',
+      '他被「解雇」了？— 他离开 CEO 职位是计划内的，之后仍在公司担任非执行角色'
+    ]
+  },
+  {
+    id: 'chesky',
+    cat: 'founder',
+    color: '#ff5a5f',
+    name: '布莱恩·切斯基 (Brian Chesky)',
+    role: 'Airbnb 联合创始人兼 CEO',
+    wikiLang: 'en',
+    wikiTitle: 'Brian Chesky',
+    summary: '2008 年与 Joe Gebbia 一起创立 Airbnb，最初是设计师在旧金山出租气垫床给参加大会的人。后发展为全球短租和民宿平台。',
+    facts: [
+      '2008 年创立 Airbnb，最初业务是设计师出租气垫床给参加大会的人',
+      '早期通过设计精美的麦片盒进行筹款',
+      '2009 年获得种子资金（Paul Graham 的 Y Combinator 投资）',
+      '2011-2012 年出现安全和信任问题，公司重构了审核和保险体系',
+      '2020 年疫情冲击旅游业，2022-2025 年逐步恢复增长',
+      '2020 年 IPO'
+    ],
+    myths: [
+      'Airbnb 是「酒店破坏者」吗？— 早期宣传是共享经济，后来更多是专业房东和民宿运营主体',
+      '创始人是设计师出身？— 是的，切斯基和 Gebbia 毕业于罗德岛设计学院（RISD）'
+    ]
+  },
+
+  // ═══════════════════════════════════════ 美国 现任 CEO / 高管 ═══════════
+  {
+    id: 'pichai',
+    cat: 'ceo',
+    color: '#4285f4',
+    name: '桑达尔·皮查伊 (Sundar Pichai)',
+    role: 'Google / Alphabet CEO',
+    wikiLang: 'en',
+    wikiTitle: 'Sundar Pichai',
+    summary: '1972 年出生于印度，斯坦福大学硕士、沃顿商学院 MBA。2004 年加入 Google，主导 Chrome 浏览器和 Android 手机系统的开发。2015 年担任 Google CEO，2019 年兼任母公司 Alphabet CEO。AI 转型期的关键人物：2023 年推出 Bard（后更名为 Gemini）。',
+    facts: [
+      '2004 年加入 Google，早期负责 Chrome OS 和 Chrome 浏览器',
+      '2005 年起负责 Android（当时 Google 刚收购 Android Inc.）',
+      '2015 年 8 月成为 Google CEO，2019 年 12 月成为 Alphabet CEO（双职）',
+      '2023 年推出 Bard（AI 助手），随后更名为 Gemini',
+      'Gemini 是 Google 家族的旗舰多模态模型，整合进搜索、Workspace、Pixel 等产品'
+    ],
+    myths: [
+      '他是 Google 的创始人吗？— 不是，创始人是 Larry Page 和 Sergey Brin（2011 年卸任 CEO 后他接任）',
+      '他领导 Google 的方式与乔布斯相同？— 他是工程和管理背景的高管，风格更偏向技术协调'
+    ]
+  },
+  {
+    id: 'cook',
+    cat: 'ceo',
+    color: '#000',
+    name: '蒂姆·库克 (Tim Cook)',
+    role: 'Apple CEO (2011 年至今)',
+    wikiLang: 'en',
+    wikiTitle: 'Tim Cook (business executive)',
+    summary: '2011 年接替史蒂夫·乔布斯成为 Apple CEO。他的背景是供应链和运营管理。库克时代使 Apple 的市值从约 3500 亿美元级别增长至约 3 万亿美元规模。',
+    facts: [
+      '供应链出身，曾在 IBM 和其他公司从事运营工作',
+      '2005 年加盟 Apple，负责全球供应链',
+      '2011 年 8 月乔布斯卸任后接任 CEO，10 月乔布斯去世',
+      'AirPods、Apple Watch、服务业务（App Store、iCloud、订阅）显著增长',
+      'Vision Pro (2024) 是他任期内推出的少数「新平台级」硬件产品',
+      'Apple 的隐私和安全公关策略（如 App Tracking Transparency）也是他任期的标志'
+    ],
+    myths: [
+      '他是乔布斯的门徒或山寨者？— 他是优秀的运营者和组织者，Apple 的成功也离不开他的运营能力',
+      'Apple 在他手中不再创新？— 争议点在于是否需要「革命性」创新，Vision Pro 等产品是探索性尝试'
+    ]
+  },
+  {
+    id: 'nadella',
+    cat: 'ceo',
+    color: '#0078d4',
+    name: '萨提亚·纳德拉 (Satya Nadella)',
+    role: 'Microsoft CEO (2014 年至今)',
+    wikiLang: 'en',
+    wikiTitle: 'Satya Nadella',
+    summary: '1967 年出生于印度，大学就读于圣克鲁斯学院，芝加哥大学 MBA。1992 年加入 Microsoft。2014 年接替史蒂夫·鲍尔默成为 CEO。他的转向是将 Microsoft 从「Windows 第一」转变为「云和 AI 第一」，通过收购 GitHub (2018)、LinkedIn (2016) 和 Azure 云服务扩张。',
+    facts: [
+      '2014 年接任 CEO，当时 Microsoft 的股价和市场地位相对较低',
+      '大力推动 Azure 云服务，挑战 AWS 的市场地位',
+      '2016 年收购 LinkedIn（约 260 亿美元），2018 年收购 GitHub（约 75 亿美元）',
+      '2023 年投资 OpenAI（多轮投资，Azure 是 OpenAI 的主要云服务商之一）',
+      'Windows 在其任期内更多是作为重要的企业产品，而非消费者的唯一核心',
+      'Microsoft 的市值在他任期内增长了数倍'
+    ],
+    myths: [
+      'Microsoft 在纳德拉之前完全失败了？— Windows 和 Office 依然是大量利润来源，只是战略较为传统',
+      '他是 AI 领域的第一人？— 他是广泛布局云和 AI 的领导人之一，但不是最早做生成式 AI 的人'
+    ]
+  },
+  {
+    id: 'jensen',
+    cat: 'ceo',
+    color: '#76b900',
+    name: '黄仁勋 (Jensen Huang)',
+    role: 'NVIDIA 创始人兼 CEO',
+    wikiLang: 'en',
+    wikiTitle: 'Jensen Huang',
+    summary: '1963 年出生于台湾，俄勒冈州立大学毕业、斯坦福大学硕士。1993 年与克里斯·马拉科夫斯基、柯蒂斯·普里姆共同创立 NVIDIA。最初向游戏玩家出售图形芯片（GPU），意外成为 AI 训练的事实基础设施，因为 GPU 的并行运算能力适合神经网络。',
+    facts: [
+      '1993 年创立 NVIDIA（与 Chris Malachowsky 和 Curtis Priem）',
+      '1999 年 IPO，首款消费级 GPU 产品是 GeForce 256（1999 年）',
+      'CUDA 平台（2006 年推出）使 GPU 变得可编程，打开了通用并行计算的大门',
+      '2010 年代后 GPU 被用于深度学习训练，NVIDIA 的数据中心业务开始快速增长',
+      'H100（2022 年）、B200（2024 年）等芯片成为 AI 训练的事实标准硬件',
+      '2024-2025 年 NVIDIA 市值超越苹果和微软，成为全球最有价值的公司之一'
+    ],
+    myths: [
+      'GPU 是为 AI 发明的吗？— 最初是为游戏图形加速设计的，AI 是后来的适配用途',
+      'NVIDIA 仅靠一款芯片生存？— 还有消费级和专业显卡、汽车自动驾驶芯片、网络设备等业务'
+    ]
+  },
+  {
+    id: 'lisa',
+    cat: 'ceo',
+    color: '#0076d6',
+    name: '李萨·苏 (Lisa Su)',
+    role: 'AMD CEO (2014 年至今)',
+    wikiLang: 'en',
+    wikiTitle: 'Lisa Su',
+    summary: '1969 年出生于台湾，麻省理工学院电子工程博士。2014 年成为 AMD CEO（当时 AMD 财务和市场地位不佳）。她转向聚焦高性能计算 CPU 和 GPU，推出了 Ryzen（2017 年）和 EPYC（服务器）处理器，重新赢回了市场份额。',
+    facts: [
+      '1969 年出生于台湾，MIT 电子工程博士',
+      '2014 年 10 月接任 AMD CEO（此前担任首席财务官等职务）',
+      'AMD 当时面临财务危机和市场份额下降，她进行了重组和战略聚焦',
+      '推出 Ryzen 桌面 CPU（2017 年 3 月），性能领先同代 Intel 产品',
+      'EPYC 服务器处理器也重新打开了数据中心市场',
+      '她在 2022-2025 年成为全球最受尊敬的科技高管之一'
+    ],
+    myths: [
+      '她是 AMD 的创始人吗？— 不是，创始人是 Jerry Sanders（1969 年）',
+      'AMD 的复兴只是她一个人的功劳？— 团队的工程能力和长期研发投入也起了重要作用'
+    ]
+  },
+  {
+    id: 'renehaas',
+    cat: 'ceo',
+    color: '#00c853',
+    name: '雷内·哈斯 (Rene Haas)',
+    role: 'Arm CEO (2021 年至今)',
+    wikiLang: 'en',
+    wikiTitle: 'Rene Haas',
+    summary: 'Arm 的首席执行官是 Rene Haas（2021 年上任）。Arm 是一家设计处理器架构（IP）的公司，大部分手机芯片（包括苹果 A 系列、麒麟、骁龙等）都基于 Arm 架构。2024 年 Arm 在纳斯达克上市（ARM）。',
+    facts: [
+      'Arm 成立于 1990 年（最初是 Acorn、Apple、VLSI 的合资企业）',
+      'Arm 不生产芯片，而是授权芯片设计蓝图（架构/IP），这是它的商业模式',
+      '绝大部分智能手机（iPhone、安卓旗舰和中低端）使用的是 Arm 架构',
+      '2023 年英伟达收购 Arm 的计划因 FTX 反对和监管问题而失败',
+      '2024 年在纳斯达克上市（ARM 股票）',
+      'Rene Haas 此前在 Broadcom 工作过'
+    ],
+    myths: [
+      'Arm 与 Intel/AMD 一样制造芯片？— 不是，它是 IP 授权公司，合作伙伴才制造芯片',
+      'Arm 只是手机公司？— 服务器、笔记本（Apple Silicon）、IoT 业务都在增长'
+    ]
+  },
+  {
+    id: 'samaltman',
+    cat: 'ceo',
+    color: '#10b981',
+    name: '萨姆·奥尔特曼 (Sam Altman)',
+    role: 'OpenAI CEO · ChatGPT 发布推动者',
+    wikiLang: 'en',
+    wikiTitle: 'Sam Altman',
+    summary: '斯坦福大学辍学生，曾在 Y Combinator 担任总裁（2014-2019 年）。2019 年加入 OpenAI 并担任 CEO，推动 GPT-3、ChatGPT、GPT-4 的落地。2023 年 11 月因董事会信任问题被解任数天，随后在微软短暂任职，随后复出。',
+    facts: [
+      '斯坦福大学辍学，曾在 Y Combinator 担任总裁（2014-2019 年）',
+      '2019 年加入 OpenAI 并成为 CEO，推动 GPT-3 到 ChatGPT 再到 GPT-4 的落地',
+      '2023 年 11 月因董事会信任问题被解任，随后在微软短暂任职，随后复出',
+      'OpenAI 在他的领导下继续推进模型的多模态化和 Agent 能力',
+      '2024-2026 年 OpenAI 面临盈利与安全之间的平衡问题'
+    ],
+    myths: [
+      '他是 OpenAI 的唯一创始人？— OpenAI 由 Sam Altman、Greg Brockman、Ilya Sutskever 等多人共同创立',
+      '他独自决策 OpenAI 的所有事务？— OpenAI 有董事会和管理团队，决策是集体过程'
+    ]
+  },
+  {
+    id: 'dario',
+    cat: 'ceo',
+    color: '#8b5cf6',
+    name: '达里奥·阿莫德 (Dario Amodei)',
+    role: 'Anthropic CEO · Claude 开发公司',
+    wikiLang: 'en',
+    wikiTitle: 'Dario Amodei',
+    summary: '前 OpenAI 研究员，2021 年与他人共同创立 Anthropic。Anthropic 是 Claude 系列大语言模型的开发公司，以「宪法式 AI」安全理念著称。2023-2026 年 Anthropic 在 AI 安全和可靠性方面获得关注。',
+    facts: [
+      '曾在 OpenAI 任职研究员，参与 GPT 系列模型的开发',
+      '2021 年与他人共同创立 Anthropic，担任 CEO',
+      'Anthropic 开发 Claude 系列大语言模型，强调安全和可靠性',
+      '推出了「宪法式 AI」的安全方法论',
+      '2023-2026 年 Anthropic 在 AI 安全领域获得关注，吸引大量投资'
+    ],
+    myths: [
+      'Claude 仅仅是另一个 ChatGPT 克隆？— Claude 在安全设计和长文本处理上有特定的技术路线',
+      'Anthropic 只关注安全，忽略性能？— 安全和性能是并行发展的，Claude 在多个基准测试中表现竞争力'
+    ]
+  },
+
+  // ═══════════════════════════════════════ 中国 科技巨头 ═══════════
+  {
+    id: 'mayun',
+    cat: 'china',
+    color: '#ff0000',
+    name: '马云 (Jack Ma)',
+    role: '阿里巴巴 创始人 · 前董事局主席',
+    wikiLang: 'zh',
+    wikiTitle: '马云',
+    summary: '1999 年与同学共同创立阿里巴巴，最初是帮助中国出口制造商的 B2B 平台。后推出淘宝（2003 年，对抗 eBay 易趣）、支付宝（2004 年）、天猫商城等。2014 年阿里巴巴在纽约证券交易所上市（当时最大的 IPO 之一，约 250 亿美元）。2019 年卸任，2024-2026 年逐渐回归公开活动。',
+    facts: [
+      '1999 年在杭州创立阿里巴巴（位于杭州西湖附近的阿里巴巴大厦）',
+      '2003 年推出淘宝网（对抗 eBay 在中国的易趣业务），后来淘宝和天猫合并',
+      '支付宝（2004 年）是中国电子支付的领先平台之一，后来成为独立的蚂蚁集团',
+      '2014 年阿里巴巴集团在纽约证券交易所上市（BABA）',
+      '2019 年卸任阿里巴巴董事局主席，Daniel Zhang 接任，此后公司领导层有多次调整',
+      '蚂蚁集团的上市曾在 2020 年底被暂停'
+    ],
+    myths: [
+      '马云只是个演讲家？— 他确实是天生的销售和故事讲述高手，但阿里巴巴的建立也是团队的成果',
+      '阿里巴巴的所有决策都由他一个人决定？— 集团是庞大的组织，许多关键决策由团队和董事会做出'
+    ]
+  },
+  {
+    id: 'mahuteng',
+    cat: 'china',
+    color: '#00b140',
+    name: '马化腾 (Pony Ma)',
+    role: '腾讯 创始人兼 CEO',
+    wikiLang: 'zh',
+    wikiTitle: '马化腾',
+    summary: '1971 年出生于汕头，中山大学计算机系毕业。1998 年与马敬恒（张志东）等人共同创立腾讯。最初开发 QQ（即时通讯软件），后推出微信（2011 年）。腾讯是中国最大的互联网公司之一，业务涵盖社交、游戏、投资（参与或投资了拼多多、美团、滴滴等）。',
+    facts: [
+      '1998 年创立腾讯，最初开发 QQ（源于 Foxmail 等产品）',
+      '2011 年推出微信（WeChat），迅速成为国民级应用（聊天、支付、小程序）',
+      '腾讯游戏是全球最大的游戏公司之一（《英雄联盟》、《国际象棋》等代理和投资）',
+      '腾讯投资了许多中国互联网公司（滴滴、美团、拼多多等都有腾讯的部分股份或早期投资）',
+      '微信的小程序生态（2017 年）是中国移动互联网的另一基础设施'
+    ],
+    myths: [
+      '腾讯仅靠微信和 QQ？— 游戏和投资业务也是重要的收入来源',
+      '马化腾是技术天才？— 他毕业于计算机专业，但腾讯的早期成功更多来自商业模式和运营'
+    ]
+  },
+  {
+    id: 'leijun',
+    cat: 'china',
+    color: '#0050ff',
+    name: '雷军 (Lei Jun)',
+    role: '小米 创始人兼 CEO',
+    wikiLang: 'zh',
+    wikiTitle: '雷军',
+    summary: '1973 年出生于武汉，武汉大学计算机系毕业。2000 年创立金山软件（WPS Office 等）。2010 年创立小米，主打「性价比」和互联网思维的手机（2011 年第一款小米手机）。小米后来扩展到生态链（家电、IoT）、米家 App 等。',
+    facts: [
+      '2000 年创立金山软件（WPS Office，是腾讯的早期竞争对手）',
+      '2010 年 4 月创立小米（宣布进军手机，2011 年 8 月销售第一款手机）',
+      '小米早期凭借「高配低价+互联网直销」模式引起关注',
+      '小米生态链（IoT 家用电器）是小米盈利的另一部分',
+      '2021 年小米在香港上市（Xiaomi Corp）',
+      '他还参与重要投资和董事会（例如大疆等）'
+    ],
+    myths: [
+      '雷军第一次创业就成功了？— 金山软件之前有过浮动（中间曾被收购、重组）',
+      '小米只是「便宜手机」公司？— 电视、家电、IoT、生态链也是重点业务'
+    ]
+  },
+  {
+    id: 'wangjun',
+    cat: 'china',
+    color: '#e60000',
+    name: '刘强东 (Richard Liu)',
+    role: '京东 创始人兼 CEO',
+    wikiLang: 'zh',
+    wikiTitle: '刘强东',
+    summary: '1974 年出生于河南，华中科技大学计算机系毕业。1998 年在校友饭店创立京东，最初销售磁盘、盗版光盘等，后转向正品电商。2004 年开始网络销售。2013 年启动自建物流。2014 年京东在纳斯达克上市（JD）。',
+    facts: [
+      '1998 年创立京东，最初是街边销售盗版光盘的小店，后转向正品',
+      '2004 年决定将业务转移到网上',
+      '2013 年 4 月宣布自建物流（此举与当时淘宝「不做物流」的策略相反）',
+      '2014 年 5 月在纳斯达克上市（JD.com）',
+      '2018 年 4 月发生雇员涉嫌性侵和杀害女顾客事件，公司管理层受到冲击',
+      '2023-2025 年他在公司的角色有所调整（卸任 CEO 等），但仍在董事会'
+    ],
+    myths: [
+      '京东只是电商网站？— 它拥有一套物流和仓储体系',
+      '刘强东仅靠销售商品成功？— 京东的商业模式是自营商品加物流，自 2013 年以来是公司的重心'
+    ]
+  },
+  {
+    id: 'zhangxiaolong',
+    cat: 'china',
+    color: '#00bfff',
+    name: '张小龙 (Zhang Xiaolong)',
+    role: '微信 / QQ 产品负责人 · 腾讯 高级执行副总裁',
+    wikiLang: 'zh',
+    wikiTitle: '张小龙',
+    summary: '1980 年代出生于湖南，毕业于中山大学。作为 QQ 早期团队骨干，后来主导了微信的产品开发（微信于 2011 年发布）。他是微信产品的核心人物。微信几乎成为中国最重要的「超级 App」之一。',
+    facts: [
+      '参与了腾讯 QQ 早期产品（曾主导 QQ 产品线）',
+      '2011 年推出微信，最初是一个简单的消息应用',
+      '微信后来迭代了朋友圈、公众号、支付、小程序等功能',
+      '小程序（2017 年）是微信平台内的轻量级应用生态',
+      '他在腾讯的职位是「微信/QQ 业务群负责人」，不是 CEO'
+    ],
+    myths: [
+      '他是腾讯 CEO？— 不是，腾讯 CEO 是马化腾，他是产品负责人',
+      '他独自创造了微信？— 他是核心产品经理之一，团队规模较大'
+    ]
+  },
+  {
+    id: 'chentianqi',
+    cat: 'china',
+    color: '#5388f8',
+    name: '陈天桥 (Chen Tianqiao)',
+    role: '腾讯 联合创始人之一 · 丝路基金',
+    wikiLang: 'zh',
+    wikiTitle: '陈天桥',
+    summary: '1980 年代末出生于中国，1995 年与哥哥陈峰共同创立腾讯。他是腾讯的联合创始人之一，后来逐渐淡出运营，转向脑科学、教育、慈善事业。',
+    facts: [
+      '1995 年与陈峰共同创立腾讯',
+      '早期担任腾讯总裁等角色',
+      '后来逐步卸下运营工作，转向投资、脑科学、神经科学研究',
+      '丝路基金等是他参与的慈善和研究组织',
+      '他和陈峰的关系常被媒体追踪'
+    ],
+    myths: [
+      '他还是腾讯每天的决策者吗？— 不，他早已淡出日常运营',
+      '他是腾讯的唯一创始人？— 联合创始人包括马化腾、马敬恒等'
+    ]
+  },
+  {
+    id: 'huangzheng',
+    cat: 'china',
+    color: '#ee4000',
+    name: '黄峥 (Colin Huang)',
+    role: '拼多多 / Temu 创始人',
+    wikiLang: 'zh',
+    wikiTitle: '黄峥',
+    summary: '1984 年出生于福州，浙江大学计算机系毕业。2015 年创立拼多多 (Pinduoduo)。拼多多凭借「拼团」（多人一起购买获得折扣）的社交电商模式，2018 年迅速崛起，成为中国电商市场的第三大玩家。2023 年推出 Temu（海外版）。',
+    facts: [
+      '1984 年出生于福建福州，浙江大学计算机系',
+      '2015 年创立拼多多 (Pinduoduo)',
+      '早期通过「农产品直供+拼团」模式迅速扩大用户',
+      '2018 年在纳斯达克上市（PDD）',
+      '2023 年推出 Temu（面向全球市场的超低价电商）',
+      '他在 2023-2024 年从公开视野淡出（卸任 CEO 等）'
+    ],
+    myths: [
+      '拼多多只是便宜的平台？— 它对价格敏感用户有很大吸引力，但品控问题也常被讨论',
+      'Temu 是拼多多的简单海外复制？— Temu 在美国、欧洲等市场有独立的推广策略'
+    ]
+  },
+  {
+    id: 'liangwenfeng',
+    cat: 'china',
+    color: '#00d4ff',
+    name: '梁文峰 (Liang Wenfeng)',
+    role: '深度求索 (DeepSeek) 创始人',
+    wikiLang: 'zh',
+    wikiTitle: '深度求索',
+    summary: 'DeepSeek（深度求索）创始人。DeepSeek 是中国 AI 公司，开发了一系列大语言模型（如 DeepSeek-V2、DeepSeek-Coder 等），以高性价比和开源策略在 2024-2026 年受到关注。',
+    facts: [
+      'DeepSeek 是中国 AI 初创公司，专注于大语言模型研发',
+      '发布了 DeepSeek-V2、DeepSeek-Coder 等模型系列',
+      '以高性价比和部分开源策略在业界受到关注',
+      '2024-2026 年 DeepSeek 在中文社区和技术圈有一定影响力',
+      '公司总部位于中国，团队规模相对较小但聚焦模型效率'
+    ],
+    myths: [
+      'DeepSeek 只是另一个大模型公司？— 它的差异化在于成本效率和部分开源的策略',
+      '它的模型与国际顶尖模型完全等同？— 在某些任务上有竞争力，但整体生态和服务仍在发展中'
+    ]
+  },
+
+  // ═══════════════════════════════════════ 平台 / 软件 ═══════════
+  {
+    id: 'duolingo',
+    cat: 'platform',
+    color: '#58cc02',
+    name: 'Duolingo',
+    role: '语言学习 App · 免费+游戏化',
+    wikiLang: 'en',
+    wikiTitle: 'Duolingo',
+    isApp: true,
+    summary: '2011 年上线的免费语言学习应用，采用游戏化设计。绿色小鸟是互联网最熟悉的语言学习符号之一。早期主打免费（广告），后增加付费会员 Super Duolingo 和认证考试 (DET) 等服务。',
+    facts: [
+      '2011 年创立（创始人 Luis von Ahn 和 Severin Hacker）',
+      '游戏化设计：每日练习、连续打卡 streak、生命值、奖励等游戏机制',
+      '早期免费+广告模式，Super Duolingo 是付费订阅服务，提供去除广告、加速等功能',
+      'Duolingo English Test (DET) 是 TOEFL/IELTS 替代的认证考试之一',
+      '2021 年在纳斯达克上市（DUOL）'
+    ],
+    myths: [
+      'Duolingo 只能学一点点？— 它适合初级和中级入门，想要流利通常需要额外深度学习',
+      '免费用户无法学完？— 大部分课程内容免费用户也可以完成，只是没有 Super 功能'
+    ]
+  },
+  {
+    id: 'youtube',
+    cat: 'platform',
+    color: '#ff0000',
+    name: 'YouTube',
+    role: '全球第二大网站 · 视频平台',
+    wikiLang: 'en',
+    wikiTitle: 'YouTube',
+    isApp: true,
+    summary: '2005 年创立的视频共享平台，2006 年被 Google 以 16.5 亿美元收购。如今是 Google 旗下最大的视频平台，包括长视频、直播、Shorts（短视频）、创作者经济和广告分成。',
+    facts: [
+      '2005 年 2 月创立（创始人 Jawed Karim、Chad Hurley、Steve Chen，前 PayPal 员工）',
+      '第一个视频是 Jawed Karim 在动物园拍摄的「Me at the zoo」',
+      '2006 年 11 月 Google 以 16.5 亿美元收购',
+      '2007 年推出 YouTube Partner Program（创作者广告分成）',
+      '2018 年推出 YouTube Music 和 YouTube Premium',
+      '2020 年代 Shorts 功能上线（对标 TikTok）'
+    ],
+    myths: [
+      'YouTube 只有长视频？— Shorts 是重要的短视频部分',
+      'YouTube 上市了吗？— 没有，它是 Google/Alphabet 的子公司，未单独上市'
+    ]
+  },
+  {
+    id: 'x-twitter',
+    cat: 'platform',
+    color: '#000',
+    name: 'X（前 Twitter）',
+    role: '社交平台 · 2022 年被收购',
+    wikiLang: 'en',
+    wikiTitle: 'X (Twitter)',
+    isApp: true,
+    summary: '2006 年上线的即时短文本社交平台。2022 年 10 月被埃隆·马斯克以 440 亿美元收购，2023 年中期更名为 X。他试图将 X 打造成「all-in-one」平台（视频、支付、社交）。',
+    facts: [
+      '2006 年 3 月上线（创始人 Jack Dorsey、Biz Stone、Evan Williams、Noah Glass）',
+      '2006 年第一次 tweet 是 Jack Dorsey 的「just setting up my twttr」',
+      '2010 年代成为新闻、政治和舆论的中心',
+      '2022 年 10 月马斯克收购（440 亿美元），随后大规模裁员',
+      '2023 年中期更名为 X，认证系统从「身份真实」变为付费功能（X Premium）',
+      '审核政策、广告生态、内容规则等多次变化'
+    ],
+    myths: [
+      'X 只是换了个名字的 Twitter？— 不仅是改名，马斯克在重构它的商业模式和产品方向',
+      '马斯克独自运营 X？— 虽然他是所有者和决策者，员工团队仍在运作'
+    ]
+  },
+  {
+    id: 'gemini',
+    cat: 'platform',
+    color: '#4285f4',
+    name: 'Gemini（Google 旗舰 AI）',
+    role: '生成式 AI 模型家族',
+    wikiLang: 'en',
+    wikiTitle: 'Gemini (language model)',
+    isApp: true,
+    summary: 'Google 推出的生成式 AI 模型家族，取代了早期的 Bard。多模态（文本、图像、代码）的旗舰模型，整合进 Google 搜索、Workspace、Pixel 等产品。',
+    facts: [
+      '2023 年 12 月宣布 Gemini（原为极光计划下的一个项目）',
+      '2024 年陆续推出 Gemini Pro、Ultra、Nano 等不同规模的版本',
+      'Gemini 整合进 Google 搜索（AI Overviews）、Google Workspace、Pixel 手机',
+      'Gemini 是 Google 对抗 OpenAI GPT 系列、Anthropic Claude、Meta Llama 等的主要产品',
+      'Google 也在推进 AI Agent 能力'
+    ],
+    myths: [
+      'Gemini 是 Google 的第一个 AI 产品？— Google 早就有 AI（搜索算法、AlphaGo、BERT 等），生成式 AI 是近年来的新形式',
+      'Gemini 只能处理纯文本？— 它是多模态的（文本、图像、代码等）'
+    ]
+  },
+  {
+    id: 'aws',
+    cat: 'platform',
+    color: '#ff9900',
+    name: 'AWS（Amazon Web Services）',
+    role: '全球最大公有云之一',
+    wikiLang: 'en',
+    wikiTitle: 'Amazon Web Services',
+    isApp: true,
+    summary: 'Amazon 的云计算服务，2006 年推出，是全球最大的公有云之一。AWS 提供计算、存储、数据库、AI/ML 等服务。AWS 的利润常常超过 Amazon 零售业务。',
+    facts: [
+      '2006 年推出（Amazon S3、EC2 等早期服务）',
+      'AWS 是 Amazon 的一部分，不是独立上市公司',
+      'AWS 的客户包括 Netflix、Airbnb、Spotify、NASA、各类初创公司和大企业',
+      '竞争对手包括 Microsoft Azure、Google Cloud',
+      'AWS 也是 AI 基础设施提供商（与 OpenAI、Anthropic 等有合作）',
+      'AWS 在 Amazon 总利润中贡献巨大'
+    ],
+    myths: [
+      'AWS 是上市公司？— 不是，它是 Amazon 内部的业务线',
+      'AWS 只卖服务器？— 它有非常多的服务（数据库、机器学习、物联网、无服务器等）'
+    ]
+  },
+  {
+    id: 'github',
+    cat: 'platform',
+    color: '#181717',
+    name: 'GitHub',
+    role: '代码托管 · 开发者平台',
+    wikiLang: 'en',
+    wikiTitle: 'GitHub',
+    isApp: true,
+    summary: '面向程序员的代码托管和协作平台。2008 年创立，2018 年被 Microsoft 以 75 亿美元收购。GitHub 是开源软件开发的事实基础设施。',
+    facts: [
+      '2008 年创立（创始人 Tom Preston-Werner、Chris Wanstrath、PJ Hyett、Scott Chacon）',
+      '2018 年 6 月被 Microsoft 收购，价格约 75 亿美元（全现金）',
+      'GitHub 是全球最大的代码托管平台，大多数开源项目在上面',
+      'GitHub Copilot 是 Microsoft/OpenAI 合作的 AI 编程助手（2021 年推出）',
+      '微软承诺 GitHub 保持独立运营（但整合进 Microsoft 开发者生态）'
+    ],
+    myths: [
+      'GitHub 只能存代码吗？— 它也可以做项目管理、CI/CD、代码评审等',
+      'GitHub 是 Microsoft 完全控制的吗？— 虽然被收购了，但在品牌和运营上保持独立的色彩'
+    ]
+  },
+  {
+    id: 'openai-chatgpt',
+    cat: 'platform',
+    color: '#10b981',
+    name: 'OpenAI / ChatGPT',
+    role: '生成式 AI 公司 · ChatGPT 开发者',
+    wikiLang: 'en',
+    wikiTitle: 'OpenAI',
+    isApp: true,
+    summary: 'OpenAI 是生成式 AI 公司，开发了 GPT 系列模型和 ChatGPT。ChatGPT 于 2022 年 11 月公开发布，迅速成为生成式 AI 的代表产品。OpenAI 还开发了 GPT-4、DALL-E 图像生成模型等。',
+    facts: [
+      'OpenAI 最初于 2015 年创立，最初是非营利组织，后来成立营利性子公司 OpenAI LP',
+      'GPT-3 于 2020 年发布，ChatGPT 于 2022 年 11 月公开发布',
+      'GPT-4 于 2023 年发布，具备更强的推理和多模态能力',
+      'DALL-E 系列是 OpenAI 的图像生成模型',
+      'OpenAI 与 Microsoft 有战略合作，Azure 是其主要云服务商',
+      'ChatGPT 的用户量在发布后迅速增长，成为生成式 AI 的代表产品'
+    ],
+    myths: [
+      'OpenAI 是非营利组织吗？— 它最初是非营利，但后来成立了营利性子公司 OpenAI LP 以支持运营',
+      'ChatGPT 是 OpenAI 唯一的产品？— 还有 GPT-4 API、DALL-E、Whisper 语音模型等'
+    ]
+  },
+  {
+    id: 'anthropic-claude',
+    cat: 'platform',
+    color: '#8b5cf6',
+    name: 'Anthropic / Claude',
+    role: 'AI 安全公司 · Claude 开发者',
+    wikiLang: 'en',
+    wikiTitle: 'Anthropic',
+    isApp: true,
+    summary: 'Anthropic 是生成式 AI 公司，由前 OpenAI 研究员于 2021 年创立，开发了 Claude 系列大语言模型。Anthropic 以「宪法式 AI」安全方法论著称，强调 AI 的安全和可靠性。',
+    facts: [
+      'Anthropic 于 2021 年创立，创始人包括 Dario Amodei 等前 OpenAI 研究员',
+      'Claude 系列大语言模型是其主要产品，强调安全和可靠性',
+      '推出了「宪法式 AI」的安全方法论',
+      'Claude 在长文本处理等任务上有特定优势',
+      '2023-2026 年 Anthropic 获得大量投资，在 AI 安全领域受到关注'
+    ],
+    myths: [
+      'Claude 只是另一个 ChatGPT 克隆？— Claude 在安全设计和长文本处理上有特定的技术路线',
+      'Anthropic 只关注安全，忽略性能？— 安全和性能是并行发展的，Claude 在多个基准测试中具有竞争力'
+    ]
+  },
+  {
+    id: 'perplexity',
+    cat: 'platform',
+    color: '#fb923c',
+    name: 'Perplexity AI',
+    role: 'AI 搜索助手 · 对话式搜索引擎',
+    wikiLang: 'en',
+    wikiTitle: 'Perplexity (company)',
+    isApp: true,
+    summary: 'Perplexity AI 是一家开发对话式搜索引擎的 AI 公司，其产品将大语言模型与网络搜索结合，提供带引用 출처的回答。创始人 Aravind Srinivas 之前在 OpenAI 和 Meta 工作过。',
+    facts: [
+      'Perplexity AI 开发对话式搜索引擎，将大语言模型与网络搜索结合',
+      '提供带引用来源的回答，强调信息的可验证性',
+      '创始人 Aravind Srinivas 之前在 OpenAI 和 Meta 工作过',
+      '产品形式包括网页版和移动应用',
+      '在 2023-2026 年成为对话式搜索领域的代表公司之一'
+    ],
+    myths: [
+      'Perplexity 只是包装好的 ChatGPT？— 它将搜索和引用机制整合进对话式界面，有特定的产品差异化',
+      '它的答案总是准确？— 与所有 AI 搜索工具有一样的局限性，用户仍需核实关键信息'
+    ]
+  },
+  {
+    id: 'characterai',
+    cat: 'platform',
+    color: '#f472b6',
+    name: 'Character.AI',
+    role: '对话式 AI 角色扮演平台',
+    wikiLang: 'en',
+    wikiTitle: 'Character.AI',
+    isApp: true,
+    summary: 'Character.AI 是一个允许用户创建和对话自定义 AI 角色的平台。其技术基于大语言模型，用户可以与各种虚构或原创角色对话。创始人 Noam Shazeer 和 Daniel De Freitas 之前在 Google 工作过。',
+    facts: [
+      'Character.AI 允许用户创建和对话自定义 AI 角色',
+      '其技术基于大语言模型，支持角色扮演和对话',
+      '创始人 Noam Shazeer 和 Daniel De Freitas 之前在 Google 工作过',
+      '平台上有大量用户创建的角色和对话',
+      '2023-2024 年成为受欢迎的 AI 角色扮演平台之一'
+    ],
+    myths: [
+      'Character.AI 只是聊天机器人？— 它的特点是用户可以自定义角色和对话情境',
+      '它的角色是真实的智能体？— 它们是基于语言模型的模拟，没有真实的自我意识'
+    ]
+  },
+  {
+    id: 'hermes',
+    cat: 'platform',
+    color: '#8b5cf6',
+    name: 'Hermes Agent',
+    role: 'AI Agent 系统 · 由 Nous Research 开发',
+    wikiLang: null,
+    wikiTitle: null,
+    isApp: true,
+    summary: 'Hermes Agent 是由韩国初创公司 Nous Research 开发的 AI Agent 系统。该系统允许用户通过对话方式操作计算机，包括读取网页、写入文件、执行代码、操作浏览器等功能。Hermes Agent 运行在 Hermes 桌面应用程序中。',
+    facts: [
+      'Hermes Agent 由韩国初创公司 Nous Research 开发',
+      '系统能够调用浏览器、终端、Python 执行引擎、文件读写等工具来协助完成任务',
+      '与单纯的聊天机器人不同，Hermes Agent 可以执行具体操作，例如生成网页文件等',
+      '系统具备持久记忆存储和技能（skill）系统，可加载特定工作流',
+      'Hermes Agent 是当前对话中使用的 AI 代理系统'
+    ],
+    myths: [
+      'Hermes Agent 由美国公司开发？— 开发者是韩国的 Nous Research',
+      'Hermes Agent 是独立的应用程序？— 它运行在 Hermes 桌面应用程序内，作为其中的 AI 代理组件'
+    ]
+  },
+
+  // ═══════════════════════════════════════ 前沿 · 动态 ═══════════
+  {
+    id: 'ai-boom',
+    cat: 'frontier',
+    color: '#7c3aed',
+    name: '生成式 AI 浪潮（2022-2026）',
+    role: 'ChatGPT → 全行业竞争',
+    wikiLang: 'en',
+    wikiTitle: 'Generative artificial intelligence',
+    summary: '2022 年 11 月 ChatGPT 公开发布，使公众广泛认识生成式 AI。此后各大公司和开源社区全线竞争。大模型的迅速发展带来了算力资源短缺（GPU）、就业和版权争议等社会议题。',
+    facts: [
+      '2022 年 11 月 ChatGPT 公开发布（OpenAI），迅速普及',
+      '2023 年微软投资 OpenAI（多轮），GitHub Copilot 集成 GPT、Bing Chat 集成 GPT-4',
+      'Google 推出 Bard（2023 年 2 月），后更名为 Gemini',
+      'Anthropic 发布 Claude 系列（受「宪法式 AI」安全理念影响）',
+      'Meta 开源 Llama 系列模型（Llama 2 2023 年、Llama 3 2024 年等）',
+      'GPU（NVIDIA H100/B200 等）成为 AI 训练的稀缺资源，数据中心投资增加',
+      '关于版权、就业、安全、监管的全球争议也在增加'
+    ],
+    myths: [
+      'AI 仅在 2022 年突然出现？— 研究早就存在，只是 ChatGPT 是第一个大规模面向公众的产品',
+      '所有 AI 都是 OpenAI 开发的？— 许多公司和开源项目都在开发，各有侧重'
+    ]
+  },
+  {
+    id: 'starlink',
+    cat: 'frontier',
+    color: '#7c3aed',
+    name: 'Starlink（星链） / SpaceX 互联网星座',
+    role: '低地球轨道卫星互联网',
+    wikiLang: 'en',
+    wikiTitle: 'Starlink',
+    summary: 'SpaceX 建设的低地球轨道卫星互联网网络。目标是提供全球覆盖的宽带，特别是在偏远、灾区、战区等难以铺设光纤的地方。到 2026 年已有数千颗卫星在轨。',
+    facts: [
+      'SpaceX 于 2015 年宣布 Starlink 项目',
+      '第一批星链卫星于 2019 年发射测试',
+      '2020 年开始为客户提供服务（最初在美国、加拿大等）',
+      '截至 2026 年已有数千颗卫星在轨（SpaceX 不断发射）',
+      'Starlink 在乌克兰战争期间提供了重要的通信支持',
+      '天文学家对天文观测的影响表示担忧'
+    ],
+    myths: [
+      'Starlink 是马斯克个人的项目吗？— 它是 SpaceX 投资的基础设施项目，有工程团队在运营',
+      '它已经覆盖全世界了？— 覆盖范围在扩大，但许多国家还有监管限制'
+    ]
+  },
+  {
+    id: 'vision-pro',
+    cat: 'frontier',
+    color: '#555',
+    name: 'Apple Vision Pro（空间计算）',
+    role: '2024 年高价混合现实头显',
+    wikiLang: 'en',
+    wikiTitle: 'Apple Vision Pro',
+    summary: '2024 年苹果发布的高价混合现实头显。号称「空间计算」的新平台。美国起售价 3499 美元，重量和电池外接等限制大众普及，但标志着苹果试图再开拓一个新平台。',
+    facts: [
+      '2024 年 6 月 WWDC 发布，2024 年 2 月在美国上线',
+      '美国起售价 3499 美元',
+      '苹果称为「空间计算」设备，融合界面显示和现实环境',
+      '重量和电池外接是两个常见的用户反馈问题',
+      '开发者生态正在建设中（visionOS）',
+      '这是库克时代少数的高调硬件创新'
+    ],
+    myths: [
+      'Vision Pro 已经是大众产品了？— 目前是高价尝鲜设备，不是大众普及产品',
+      '它只是 VR 游戏机？— 苹果将其定位为工作、生产力、媒体消费的混合现实设备，不只是游戏'
+    ]
+  },
+  {
+    id: 'metaverse',
+    cat: 'frontier',
+    color: '#1877f2',
+    name: '元宇宙（Metaverse）热潮与降温',
+    role: '2021-2022 热潮 → 2023-2026 降温',
+    wikiLang: 'en',
+    wikiTitle: 'Metaverse',
+    summary: '2021-2022 年扎克伯格宣布 Meta 押注元宇宙后，行业进行了一定程度的投入。到了 2023-2026 年，元宇宙概念相对降温，注意力转向生成式 AI 和 Agent 技术。',
+    facts: [
+      '2021 年 10 月 Facebook 更名为 Meta，宣布元宇宙战略',
+      '大量公司和投资跟风元宇宙概念（2021-2022 年）',
+      'Meta 的 Reality Labs（VR/AR 业务）每年亏损巨额资金',
+      '2023-2026 年元宇宙热度降温，注意力转向生成式 AI',
+      'VR/AR 头显市场依然存在（Meta Quest、Apple Vision Pro 等），但「元宇宙」作为整体愿景尚未完全实现'
+    ],
+    myths: [
+      '元宇宙完全失败了吗？— 特定产品（VR 游戏、虚拟会议等）仍有用户，但整体愿景未达到预期的爆发程度',
+      'Meta 放弃元宇宙了吗？— 没有，Reality Labs 仍在投入，只是市场焦点有所不同'
+    ]
+  },
+  {
+    id: 'apple-ceo-lineage',
+    cat: 'frontier',
+    color: '#000',
+    name: '苹果 CEO 更迭 · 乔布斯 → 库克 → ?',
+    role: '苹果 CEO 继承谱系',
+    wikiLang: 'zh',
+    wikiTitle: '苹果公司',
+    summary: '2011 年乔布斯去世，库克接任 CEO。到 2026 年 9 月，尚未正式公布第三任 Apple CEO。库克的接班人问题是外界关注的话题。',
+    facts: [
+      '史蒂夫·乔布斯 1976 年创立 Apple，1985 年被赶出，1997 年回归，2011 年 10 月 5 日去世',
+      '蒂姆·库克 2011 年 8 月 24 日接任 CEO，9 月 25 日生效',
+      '库克时代 Apple 市值从约 3500 亿美元级别增长至约 3 万亿美元级别',
+      '苹果没有公开宣布接班人，法律文件中有关于库克死亡或残疾的后备计划，但没有具体人选对外公布',
+      '库克在 2025-2026 年已 64 岁左右，关于「下一任 CEO」的传闻偶尔出现但未被证实'
+    ],
+    myths: [
+      '库克马上就要退休了？— 他还在任，没有公开的退休计划',
+      '苹果 CEO 更换后就会是像乔布斯的天才？— 不确定，新 CEO 可能是运营者风格，或者 Apple 会采取不同的领导结构'
+    ]
+  }
+];
+
+// ─── 筛选栏 ───────────────────────────────────────────────────────────────
+const CATEGORY_LABEL = {
+  founder: { label: '🇺🇸 美国 创始人/大佬', icon: '👤' },
+  ceo: { label: '🇺🇸 美国 现任 CEO / 高管', icon: '👔' },
+  china: { label: '🇨🇳 中国 科技巨头', icon: '🇨🇳' },
+  platform: { label: '⚙️ 平台 / 软件', icon: '💻' },
+  frontier: { label: '🚀 前沿 · 动态', icon: '📡' }
+};
+const CATEGORY_COUNT = {
+  founder: DATA.filter(d => d.cat === 'founder').length,
+  ceo: DATA.filter(d => d.cat === 'ceo').length,
+  china: DATA.filter(d => d.cat === 'china').length,
+  platform: DATA.filter(d => d.cat === 'platform').length,
+  frontier: DATA.filter(d => d.cat === 'frontier').length
+};
+
+const filterBar = document.getElementById('filterBar');
+const content = document.getElementById('content');
+const newsList = document.getElementById('newsList');
+
+const filters = [
+  { id: 'all', label: '全部' },
+  { id: 'founder', label: '美国创始人' },
+  { id: 'ceo', label: '美国现任CEO' },
+  { id: 'china', label: '中国巨头' },
+  { id: 'platform', label: '平台/软件' },
+  { id: 'frontier', label: '前沿动态' }
+];
+filters.forEach(f => {
+  const el = document.createElement('div');
+  el.className = 'filter-chip' + (f.id === 'all' ? ' active' : '');
+  el.dataset.filter = f.id;
+  const label = document.createElement('span');
+  label.textContent = f.label;
+  el.appendChild(label);
+  if (f.id !== 'all') {
+    const count = document.createElement('span');
+    count.className = 'count';
+    count.textContent = CATEGORY_COUNT[f.id] || 0;
+    el.appendChild(count);
+  }
+  el.addEventListener('click', () => {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    renderCards(f.id);
+  });
+  filterBar.appendChild(el);
+});
+
+// ─── 主题切换 ─────────────────────────────────────────────────────────────
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+const themeLabel = document.getElementById('themeLabel');
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('tech-wiki-theme', theme);
+  if (theme === 'dark') {
+    themeIcon.textContent = '🌙';
+    themeLabel.textContent = '夜晚';
+  } else {
+    themeIcon.textContent = '☀️';
+    themeLabel.textContent = '白天';
+  }
+}
+
+// 初始化主题
+const savedTheme = localStorage.getItem('tech-wiki-theme') || 'dark';
+setTheme(savedTheme);
+
+themeToggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  setTheme(current === 'dark' ? 'light' : 'dark');
+});
+
+// ─── 渲染卡片 ─────────────────────────────────────────────────────────────
+function renderCards(activeFilter) {
+  content.innerHTML = '';
+  let lastCat = null;
+  let items = DATA;
+  if (activeFilter !== 'all') {
+    items = DATA.filter(d => d.cat === activeFilter);
+  }
+  if (items.length === 0) {
+    content.innerHTML = '<div class="empty-state">暂无条目</div>';
+    return;
+  }
+  items.forEach((item, idx) => {
+    if (item.cat !== lastCat) {
+      const cat = CATEGORY_LABEL[item.cat] || { label: item.cat, icon: '📌' };
+      const catLabel = document.createElement('div');
+      catLabel.className = 'category-label';
+      catLabel.innerHTML = `<span class="cat-icon">${cat.icon}</span> ${cat.label}`;
+      content.appendChild(catLabel);
+      lastCat = item.cat;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.id = item.id;
+
+    const avatarText = (item.name.match(/[a-zA-Z]/) || [])[0] || item.name.charAt(0);
+    const avatarHTML = item.isApp
+      ? `<div class="avatar" style="background:linear-gradient(135deg, ${item.color}, ${adjustColor(item.color, -30)})">
+           <div class="avatar-bg"></div>
+           <span class="avatar-text">${item.name.split(' ')[0].charAt(0)}</span>
+         </div>`
+      : `<div class="avatar" data-wiki="${encodeURIComponent(item.wikiLang || 'en')}/${encodeURIComponent(item.wikiTitle || '')}" style="background:${item.color}">
+           <div class="avatar-bg"></div>
+           <span class="avatar-text">${avatarText}</span>
+         </div>`;
+
+    card.innerHTML = `
+      <div class="card-head">
+        ${avatarHTML}
+        <div class="title-col">
+          <div class="title">${item.name}</div>
+          <div class="sub">${item.role}</div>
+        </div>
+        <div class="chevron">▾</div>
+      </div>
+      <div class="body-wrap">
+        <p class="summary">${item.summary}</p>
+        <p class="meta">
+          <span>分类: ${item.cat === 'founder' ? '美国创始人' : item.cat === 'ceo' ? '美国现任CEO' : item.cat === 'china' ? '中国科技巨头' : item.cat === 'platform' ? '平台/软件' : '前沿动态'}</span>
+          <span class="dot"></span>
+          <span>更新: 2026-09</span>
+        </p>
+        <div class="label first">关键事实</div>
+        ${item.facts.map(f => `<div class="fact">${f}</div>`).join('')}
+        <div class="label">常见误解</div>
+        ${item.myths.map(m => `<div class="fact myth">${m}</div>`).join('')}
+      </div>
+    `;
+
+    card.querySelector('.card-head').addEventListener('click', () => {
+      card.classList.toggle('open');
+    });
+
+    content.appendChild(card);
+
+    // 加载头像
+    const avatarEl = card.querySelector('.avatar[data-wiki]');
+    if (avatarEl && avatarEl.dataset.wiki) {
+      loadWikiAvatar(avatarEl, avatarEl.dataset.wiki);
+    }
+  });
+}
+
+// ─── 维基百科头像加载（多源） ──────────────────────────────────────────────
+async function loadWikiAvatar(avatarEl, wikiKey) {
+  const [lang, title] = wikiKey.split('/');
+  const sources = [
+    { url: `https://${lang}.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=pageimages&format=json&pithumbsize=200&origin=*`, type: 'wiki' },
+    { url: `https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=pageimages&format=json&pithumbsize=200&origin=*`, type: 'commons' },
+  ];
+
+  for (const source of sources) {
+    try {
+      const resp = await fetch(source.url);
+      if (!resp.ok) continue;
+      const data = await resp.json();
+      const pages = data.query && data.query.pages;
+      if (!pages) continue;
+      const pageId = Object.keys(pages)[0];
+      const page = pages[pageId];
+      if (page.thumbnail) {
+        const imgUrl = page.thumbnail.source;
+        try {
+          const imgResp = await fetch(imgUrl, { method: 'HEAD' });
+          if (imgResp.ok) {
+            setAvatarImage(avatarEl, imgUrl);
+            return;
+          }
+        } catch {}
+      }
+      if (page.original) {
+        try {
+          const imgResp = await fetch(page.original.source, { method: 'HEAD' });
+          if (imgResp.ok) {
+            setAvatarImage(avatarEl, page.original.source);
+            return;
+          }
+        } catch {}
+      }
+    } catch (e) {
+      console.warn('Wiki avatar fetch failed:', source.url, e);
+    }
+  }
+
+  // 软件 Logo 特殊处理：从维基百科页面提取首图
+  if (avatarEl.dataset.wiki && avatarEl.dataset.wiki.startsWith('en/')) {
+    const title = avatarEl.dataset.wiki.split('/')[1];
+    try {
+      const resp = await fetch(`https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=images&format=json&origin=*`);
+      const data = await resp.json();
+      const pages = data.query && data.query.pages;
+      if (pages) {
+        const pageId = Object.keys(pages)[0];
+        const page = pages[pageId];
+        if (page.images && page.images.length > 0) {
+          const imgTitle = page.images[0].title;
+          const imgResp = await fetch(`https://commons.wikimedia.org/w/api.php?action=query&titles=${encodeURIComponent(imgTitle)}&prop=imageinfo&iiprop=url&format=json&origin=*`);
+          const imgData = await imgResp.json();
+          const imgPages = imgData.query && imgData.query.pages;
+          if (imgPages) {
+            const imgPageId = Object.keys(imgPages)[0];
+            const imgPage = imgPages[imgPageId];
+            if (imgPage.imageinfo && imgPage.imageinfo[0].url) {
+              setAvatarImage(avatarEl, imgPage.imageinfo[0].url);
+              return;
+            }
+          }
+        }
+      }
+    } catch (e) {}
+  }
+
+  // 都失败了：保留字母 fallback
+  avatarEl.classList.add('loaded');
+}
+
+function setAvatarImage(avatarEl, url) {
+  avatarEl.innerHTML = `
+    <img src="${url}" alt="" loading="lazy"
+         onload="this.parentElement.classList.add('loaded')"
+         onerror="this.parentElement.classList.remove('loaded'); this.parentElement.querySelector('.avatar-text').style.display='block'; this.parentElement.querySelector('.avatar-bg').style.opacity='0.15'">
+    <div class="avatar-bg"></div>
+    <span class="avatar-text" style="display:none">${avatarEl.dataset.wiki ? avatarEl.dataset.wiki.split('/')[1].charAt(0) : '?'}</span>
+  `;
+  const img = avatarEl.querySelector('img');
+  img.onerror = function() {
+    avatarEl.classList.add('loaded');
+    avatarEl.innerHTML = `
+      <div class="avatar-bg" style="opacity:0.15"></div>
+      <span class="avatar-text">${avatarEl.dataset.wiki ? avatarEl.dataset.wiki.split('/')[1].charAt(0) : '?'}</span>
+    `;
+  };
+  img.onload = function() {
+    avatarEl.classList.add('loaded');
+  };
+}
+
+// ─── 新闻流 ───────────────────────────────────────────────────────────────
+async function fetchNews() {
+  const results = [];
+
+  // 1. Hacker News（官方 Firebase API，无需 CORS）
+  try {
+    const resp = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json?limitToFirst=15');
+    const ids = await resp.json();
+    if (ids && ids.length) {
+      for (const id of ids.slice(0, 10)) {
+        try {
+          const story = await fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`).then(r => r.json());
+          if (story && story.title && story.url) {
+            results.push({
+              title: story.title,
+              source: 'Hacker News',
+              url: story.url,
+              time: new Date(story.time * 1000).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
+              score: story.score,
+              desc: truncate(stripHTML(story.text || ''), 100)
+            });
+          }
+        } catch (e) {}
+      }
+    }
+  } catch (e) {}
+
+  // 2. Techmeme RSS
+  try {
+    const resp = await fetch('https://api.allorigins.win/raw?url=https://techmeme.com/feed');
+    const text = await resp.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/xml');
+    const items = doc.querySelectorAll('item');
+    items.forEach(item => {
+      const title = item.querySelector('title')?.textContent || '';
+      const link = item.querySelector('link')?.textContent || '';
+      const pubDate = item.querySelector('pubDate')?.textContent || '';
+      const desc = item.querySelector('description')?.textContent || '';
+      if (title && link) {
+        results.push({
+          title: title.replace(/^Techmeme: /, ''),
+          source: 'Techmeme',
+          url: link,
+          time: pubDate ? new Date(pubDate).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '刚刚',
+          score: null,
+          desc: truncate(stripHTML(desc), 100)
+        });
+      }
+    });
+  } catch (e) {}
+
+  // 3. TechCrunch RSS
+  try {
+    const resp = await fetch('https://api.allorigins.win/raw?url=https://techcrunch.com/feed/');
+    const text = await resp.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(text, 'text/xml');
+    const items = doc.querySelectorAll('item');
+    items.forEach(item => {
+      const title = item.querySelector('title')?.textContent || '';
+      const link = item.querySelector('link')?.textContent || '';
+      const pubDate = item.querySelector('pubDate')?.textContent || '';
+      const desc = item.querySelector('description')?.textContent || '';
+      if (title && link) {
+        results.push({
+          title: title.replace(/^TechCrunch: /, ''),
+          source: 'TechCrunch',
+          url: link,
+          time: pubDate ? new Date(pubDate).toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : '刚刚',
+          score: null,
+          desc: truncate(stripHTML(desc), 100)
+        });
+      }
+    });
+  } catch (e) {}
+
+  // 按时间排序，去重
+  results.sort((a, b) => b.time.localeCompare(a.time));
+  const unique = [];
+  const seen = new Set();
+  for (const r of results) {
+    const key = r.title.toLowerCase().slice(0, 50);
+    if (!seen.has(key)) {
+      seen.add(key);
+      unique.push(r);
+    }
+  }
+  return unique.slice(0, 12);
+}
+
+function stripHTML(html) {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || '';
+}
+
+function truncate(str, len) {
+  if (str.length <= len) return str;
+  return str.slice(0, len - 2) + '…';
+}
+
+// ─── 翻译函数 ─────────────────────────────────────────────────────────────
+const translationCache = new Map();
+
+async function translateToChinese(text) {
+  if (translationCache.has(text)) {
+    return translationCache.get(text);
+  }
+  try {
+    const resp = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|zh`);
+    const data = await resp.json();
+    if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+      const translated = data.responseData.translatedText;
+      translationCache.set(text, translated);
+      return translated;
+    }
+  } catch (e) {
+    console.warn('Translation failed:', text, e);
+  }
+  // 如果翻译失败，返回原文（但标注为英文）
+  translationCache.set(text, null);
+  return null;
+}
+
+// ─── 新闻图片获取 ──────────────────────────────────────────────────────────
+async function fetchNewsImage(url) {
+  try {
+    const resp = await fetch(url, { mode: 'cors' });
+    if (resp.ok) {
+      const html = await resp.text();
+      const match = html.match(/<meta\s+property=["']og:image["']\s+content=["']([^"']+)["']/i);
+      if (match && match[1]) {
+        try {
+          const imgResp = await fetch(match[1], { method: 'HEAD' });
+          if (imgResp.ok && imgResp.headers.get('content-type')?.startsWith('image/')) {
+            return match[1];
+          }
+        } catch {}
+      }
+      const imgMatch = html.match(/<img[^>]+src=["']([^"']+\.(?:png|jpg|jpeg|gif|webp))["']/i);
+      if (imgMatch && imgMatch[1]) {
+        try {
+          const imgResp = await fetch(imgMatch[1], { method: 'HEAD' });
+          if (imgResp.ok) return imgMatch[1];
+        } catch {}
+      }
+    }
+  } catch (e) {
+    try {
+      const proxyResp = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+      const html = await proxyResp.text();
+      const match = html.match(/<meta\s+property=["']og:image["']\s+content=["']([^"']+)["']/i);
+      if (match && match[1]) {
+        return match[1];
+      }
+      const imgMatch = html.match(/<img[^>]+src=["']([^"']+\.(?:png|jpg|jpeg|gif|webp))["']/i);
+      if (imgMatch && imgMatch[1]) {
+        return imgMatch[1];
+      }
+    } catch (e2) {}
+  }
+  return null;
+}
+
+// ─── 颜色工具 ─────────────────────────────────────────────────────────────
+function adjustColor(hex, amount) {
+  if (!hex || hex.length < 6) return hex;
+  const num = parseInt(hex.slice(1), 16);
+  let r = (num >> 16) + amount;
+  let g = ((num >> 8) & 0x00FF) + amount;
+  let b = (num & 0x0000FF) + amount;
+  r = Math.min(255, Math.max(0, r));
+  g = Math.min(255, Math.max(0, g));
+  b = Math.min(255, Math.max(0, b));
+  return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+}
+
+// ─── 关键词 → 条目映射 ────────────────────────────────────────────────────
+const NEWS_RELATED = {
+  'SpaceX': ['musk', 'starlink'],
+  'Tesla': ['musk'],
+  'Twitter': ['x-twitter'],
+  'Meta': ['zuckerberg'],
+  'Facebook': ['zuckerberg'],
+  'Instagram': ['zuckerberg'],
+  'Google': ['pichai'],
+  'Alphabet': ['pichai'],
+  'Gemini': ['gemini'],
+  'ChatGPT': ['openai-chatgpt', 'ai-boom'],
+  'OpenAI': ['openai-chatgpt', 'ai-boom', 'samaltman'],
+  'GPT': ['openai-chatgpt', 'ai-boom'],
+  'Claude': ['anthropic-claude', 'dario'],
+  'Anthropic': ['anthropic-claude', 'dario'],
+  'Apple': ['cook', 'jobs', 'apple-ceo-lineage', 'vision-pro'],
+  'iPhone': ['cook', 'jobs'],
+  'AirPods': ['cook'],
+  'NVIDIA': ['jensen'],
+  'AMD': ['lisa'],
+  'Microsoft': ['nadella'],
+  'Azure': ['nadella'],
+  'GitHub': ['github'],
+  'Amazon': ['bezos'],
+  'AWS': ['aws'],
+  'Netflix': ['hastings'],
+  'Airbnb': ['chesky'],
+  'Duolingo': ['duolingo'],
+  'Alibaba': ['mayun'],
+  'Tencent': ['mahuteng'],
+  'WeChat': ['zhangxiaolong', 'mahuteng'],
+  'Xiaomi': ['leijun'],
+  'JD.com': ['wangjun'],
+  'Pinduoduo': ['huangzheng'],
+  'Temu': ['huangzheng'],
+  'Vision Pro': ['vision-pro'],
+  'Neuralink': ['musk'],
+  'Blue Origin': ['bezos'],
+  'Arm': ['renehaas'],
+  'Starlink': ['starlink'],
+  '元宇宙': ['metaverse'],
+  'Metaverse': ['metaverse'],
+  '马云': ['mayun'],
+  '马化腾': ['mahuteng'],
+  '雷军': ['leijun'],
+  '库克': ['cook'],
+  '乔布斯': ['jobs'],
+  '苹果': ['cook', 'jobs', 'apple-ceo-lineage', 'vision-pro'],
+  '微信': ['zhangxiaolong'],
+  '拼多多': ['huangzheng'],
+  '京东': ['wangjun'],
+  '小米': ['leijun'],
+  '腾讯': ['mahuteng'],
+  'Sam Altman': ['samaltman'],
+  'Sam Altman': ['samaltman'],
+  'Dario Amodei': ['dario'],
+  'DeepSeek': ['liangwenfeng'],
+  '深度求索': ['liangwenfeng'],
+  'Perplexity': ['perplexity'],
+  'Character.AI': ['characterai'],
+};
+
+function findRelatedTags(title) {
+  const tags = [];
+  const lower = title.toLowerCase();
+  for (const [keyword, ids] of Object.entries(NEWS_RELATED)) {
+    if (lower.includes(keyword.toLowerCase())) {
+      for (const id of ids) {
+        if (!tags.includes(id)) tags.push(id);
+      }
+    }
+  }
+  return tags;
+}
+
+async function renderNews(newsItems) {
+  newsList.innerHTML = '';
+  if (!newsItems || newsItems.length === 0) {
+    newsList.innerHTML = '<div class="news_empty">暂无新闻数据</div>';
+    return;
+  }
+
+  const translationPromises = newsItems.map(async (item) => {
+    const translatedTitle = await translateToChinese(item.title);
+    item.translatedTitle = translatedTitle;
+    return item;
+  });
+
+  const translatedItems = await Promise.all(translationPromises);
+
+  for (const item of translatedItems) {
+    const div = document.createElement('div');
+    div.className = 'news_item';
+
+    const relatedTags = findRelatedTags(item.title);
+
+    div.innerHTML = `
+      <div class="news_image" id="newsImg_${item.title.replace(/[^a-zA-Z0-9]/g, '')}">
+        <span class="placeholder">📰</span>
+      </div>
+      <div class="news_body">
+        <div class="news_title-zh">${item.translatedTitle || item.title}</div>
+        ${item.translatedTitle ? `<div class="news_title-en">${item.title}</div>` : ''}
+        ${item.desc ? `<div class="news_summary">${item.desc}</div>` : ''}
+        <div class="news_meta">
+          <span class="news_source">${item.source}</span>
+          <span class="news_time">${item.time}</span>
+          ${item.score ? `<span>· ${item.score} 分</span>` : ''}
+        </div>
+        ${relatedTags.map(id => {
+          const data = DATA.find(d => d.id === id);
+          if (data) return `<span class="news_tag related" data-jump="${id}">→ ${data.name}</span>`;
+        }).join('')}
+      </div>
+    `;
+    newsList.appendChild(div);
+
+    // 加载新闻图片
+    const imgContainer = div.querySelector('.news_image');
+    const imageUrl = await fetchNewsImage(item.url);
+    if (imageUrl) {
+      imgContainer.innerHTML = `<img src="${imageUrl}" alt="" loading="lazy"
+        onload="this.parentElement.classList.add('loaded')"
+        onerror="this.parentElement.innerHTML='<span class=\'placeholder\'>📰</span>'">`;
+    } else {
+      const iconMap = {
+        'Hacker News': '💻',
+        'Techmeme': '🔥',
+        'TechCrunch': '🚀'
+      };
+      imgContainer.innerHTML = `<span class="placeholder">${iconMap[item.source] || '📰'}</span>`;
+    }
+  }
+
+  // 绑定相关标签点击 → 跳转到卡片
+  document.querySelectorAll('.news_tag.related').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = el.dataset.jump;
+      const card = document.querySelector(`.card[data-id="${id}"]`);
+      if (card) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setTimeout(() => card.classList.add('open'), 300);
+      }
+    });
+  });
+}
+
+async function refreshNews() {
+  const spinner = document.getElementById('newsSpinner');
+  const label = document.getElementById('refreshLabel');
+  spinner.style.display = 'inline-block';
+  label.textContent = '加载中…';
+  label.disabled = true;
+
+  newsList.innerHTML = '<div class="news_empty">加载新闻中…</div>';
+  try {
+    const items = await fetchNews();
+    await renderNews(items);
+  } catch (e) {
+    newsList.innerHTML = '<div class="news_empty">新闻加载失败，请刷新重试</div>';
+    console.error('News fetch error:', e);
+  }
+  spinner.style.display = 'none';
+  label.textContent = '↻ 刷新';
+  label.disabled = false;
+}
+
+document.getElementById('refreshNews').addEventListener('click', refreshNews);
+
+// ─── 初始化 ────────────────────────────────────────────────────────────────
+renderCards('all');
+refreshNews();
+
+// 每 5 分钟刷新一次新闻
+setInterval(refreshNews, 5 * 60 * 1000);
+</script>
+</body>
+</html>
